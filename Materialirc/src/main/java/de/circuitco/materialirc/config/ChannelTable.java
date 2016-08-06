@@ -20,7 +20,7 @@ public class ChannelTable {
 
     public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
             ID + " INTEGER PRIMARY KEY," +
-            USER_CONFIG_ID + "INTEGER NOT NULL," +
+            USER_CONFIG_ID + " INTEGER NOT NULL," +
             CHANNEL_NAME + " TEXT)";
     public static final String CREATE_CONSTRAINT = "CREATE UNIQUE INDEX dupe_channel ON " + TABLE_NAME +
             " (" + CHANNEL_NAME + "," + USER_CONFIG_ID + ")";

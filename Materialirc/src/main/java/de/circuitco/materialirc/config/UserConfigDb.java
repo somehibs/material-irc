@@ -30,12 +30,12 @@ public class UserConfigDb extends SQLiteOpenHelper {
     public UserConfigDb(Context context) {
         super(context, TABLE_NAME, null, 1);
         db = getWritableDatabase();
-        ChannelTable.onCreate(db);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE);
+        ChannelTable.onCreate(db);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package de.circuitco.materialirc;
+package de.circuitco.materialirc.activity;
 
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import de.circuitco.materialirc.R;
 import de.circuitco.materialirc.activity.ServiceActivity;
 import de.circuitco.materialirc.activity.UserConfigActivity;
 import de.circuitco.materialirc.adapters.ConnectionAdapter;
