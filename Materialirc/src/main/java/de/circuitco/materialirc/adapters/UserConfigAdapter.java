@@ -55,7 +55,7 @@ public class UserConfigAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             textWatcher.key = key;
             if ( maybeValue != null ) {
                 text.getEditText().setText(maybeValue);
-            } else {git stat
+            } else {
                 text.getEditText().setText("");
             }
         }
