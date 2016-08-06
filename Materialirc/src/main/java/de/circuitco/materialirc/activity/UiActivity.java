@@ -12,6 +12,8 @@ import de.circuitco.materialirc.R;
  * Created by alex on 03/07/16.
  */
 public abstract class UiActivity extends AppCompatActivity {
+    protected boolean paused = true;
+
     // Stuff you have to do
     public abstract int getLayoutId();
 
@@ -42,5 +44,17 @@ public abstract class UiActivity extends AppCompatActivity {
             getMenuInflater().inflate(getMenuId(), menu);
             return true;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        paused = false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        paused = true;
     }
 }

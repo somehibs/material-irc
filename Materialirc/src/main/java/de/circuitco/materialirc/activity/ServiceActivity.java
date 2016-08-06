@@ -15,9 +15,20 @@ import de.circuitco.materialirc.service.IrcService;
 public abstract class ServiceActivity extends UiActivity {
     protected IrcService irc;
     protected ServiceActivityConnection serviceBinding;
-    protected boolean paused = true;
 
+    // Stuff you'll always want
+
+    /**
+     * onService is called whenever both of the following are true
+     * - the ui is unpaused
+     * - the service is alive.
+     *
+     * this means switching apps, and switching back will cause another onService call
+     */
     public abstract void onService();
+
+    // stuff you might want
+    //nothing
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +40,9 @@ public abstract class ServiceActivity extends UiActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        paused = false;
         if ( serviceBinding.isConnected ) {
             onService();
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        paused = true;
     }
 
     @Override

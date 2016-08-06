@@ -14,4 +14,5 @@
     <string name="general_title">General</string>
     <string name="server_title">Servers</string>
     <string name="user_config_title">Configure</string>
+    <string name="manage_connections">Connections</string>
 </resources>

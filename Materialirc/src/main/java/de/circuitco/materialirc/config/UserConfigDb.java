@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by alex on 12/06/16.
  */
@@ -27,6 +30,7 @@ public class UserConfigDb extends SQLiteOpenHelper {
     public UserConfigDb(Context context) {
         super(context, TABLE_NAME, null, 1);
         db = getWritableDatabase();
+        ChannelTable.onCreate(db);
     }
 
     @Override
@@ -93,5 +97,20 @@ public class UserConfigDb extends SQLiteOpenHelper {
         boolean has = cur.getLong(0) > 0;
         cur.close();
         return has;
+    }
+
+    public List<UserConfig> getConfig() {
+        Cursor cur = db.query(TABLE_NAME, UserConfig.fullProjection,
+                UserConfig.SERVER_ADDRESS + " NOT NULL AND " + UserConfig.SERVER_PORT + " NOT NULL",
+                null, null, null, null);
+
+        List<UserConfig> configs = new ArrayList<>();
+        while (cur.moveToNext()) {
+            configs.add(configFromCursor(cur));
+        }
+
+        cur.close();
+
+        return configs;
     }
 }

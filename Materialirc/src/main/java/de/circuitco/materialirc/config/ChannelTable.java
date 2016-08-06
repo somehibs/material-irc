@@ -1,6 +1,7 @@
 package de.circuitco.materialirc.config;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -20,11 +21,11 @@ public class ChannelTable {
     public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
             ID + " INTEGER PRIMARY KEY," +
             USER_CONFIG_ID + "INTEGER NOT NULL," +
-            CHANNEL_NAME + "TEXT)";
+            CHANNEL_NAME + " TEXT)";
     public static final String CREATE_CONSTRAINT = "CREATE UNIQUE INDEX dupe_channel ON " + TABLE_NAME +
             " (" + CHANNEL_NAME + "," + USER_CONFIG_ID + ")";
 
-    public void onCreate(SQLiteDatabase db) {
+    public static void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE);
         db.execSQL(CREATE_CONSTRAINT);
     }
