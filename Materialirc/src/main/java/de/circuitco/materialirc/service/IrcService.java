@@ -29,5 +29,11 @@ public class IrcService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Load all available services from config.
+
+        // Create all the necessary bot wrappers and add them to a connection map.
+
+        // Connect all the connections using the bot wrappers
     }
 }

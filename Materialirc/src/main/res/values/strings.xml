@@ -2,11 +2,16 @@
     <string name="app_name">MaterialIrc</string>
     <string name="server_address_hint">Server address</string>
     <string name="server_port_hint">Server port</string>
+    <string name="secondary_server_address_hint">Secondary server address</string>
+    <string name="secondary_server_port_hint">Secondary server port</string>
     <string name="autoline_hint">Autoline</string>
     <string name="save">Save</string>
-    <string name="config_name_hint">Network name (whatever you want)</string>
+    <string name="config_name_hint">Network nickname</string>
     <string name="username_hint">Username</string>
     <string name="welcome_text_1">a</string>
     <string name="welcome_text_2">b</string>
     <string name="welcome_text_3">c</string>
+    <string name="general_title">General</string>
+    <string name="server_title">Servers</string>
+    <string name="user_config_title">Configure</string>
 </resources>

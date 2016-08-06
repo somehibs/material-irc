@@ -3,10 +3,13 @@ package de.circuitco.materialirc.adapters;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,29 +25,60 @@ public class UserConfigAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public UserConfig config;
 
     private List<Pair<String, String>> configValues;
-    // map of db names to StringConfigItem bindings
-    private Map<String, StringConfigItem> configItemMap;
+    private Map<String, String> userConfigChanges;
 
     // list of user config db names and hints
     public UserConfigAdapter(UserConfig configToModify, List<Pair<String, String>> configValues) {
         config = configToModify;
         this.configValues = configValues;
-        configItemMap = new HashMap<>();
+        userConfigChanges = new HashMap<>();
     }
 
     public void refreshConfig() {
         // populate the config with our data
-        for ( Map.Entry<String, StringConfigItem> item : configItemMap.entrySet() ) {
-            config.putString(item.getKey(), item.getValue().text.getEditText().getText().toString());
+        for ( Map.Entry<String, String> item : userConfigChanges.entrySet() ) {
+            config.putString(item.getKey(), item.getValue());
         }
     }
 
     public static class StringConfigItem extends RecyclerView.ViewHolder {
         public TextInputLayout text = null;
-        public String configItemKey = null;
-        public StringConfigItem(View itemView) {
+        public SavingTextWatcher textWatcher = null;
+        public StringConfigItem(View itemView, SavingTextWatcher textWatcher) {
             super(itemView);
+            this.textWatcher = textWatcher;
             text = (TextInputLayout)itemView;
+            text.getEditText().addTextChangedListener(textWatcher);
+        }
+
+        public void updatePositon(String key, String maybeValue) {
+            textWatcher.key = key;
+            if ( maybeValue != null ) {
+                text.getEditText().setText(maybeValue);
+            } else {git stat
+                text.getEditText().setText("");
+            }
+        }
+    }
+
+    public class SavingTextWatcher implements TextWatcher {
+        public String key = null;
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if ( key != null ) {
+                userConfigChanges.put(key, s.toString());
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
         }
     }
 
@@ -56,13 +90,22 @@ public class UserConfigAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case 0:
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.recycler_string_config, parent, false);
-                holder = new StringConfigItem(v);
+                holder = new StringConfigItem(v, new SavingTextWatcher());
+                break;
+            case 1:
+                v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.recycler_header, parent, false);
+                holder = new HeaderItem(v);
+                break;
         }
         return holder;
     }
 
     @Override
     public int getItemViewType(int position) {
+        if ( configValues.get(position).first.equals("HEADER" ) ) {
+            return 1;
+        }
         return 0;
     }
 
@@ -73,19 +116,33 @@ public class UserConfigAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder abstractHolder, int position) {
-        StringConfigItem holder = (StringConfigItem)abstractHolder;
-        Pair<String,String> entry = configValues.get(position);
-        configItemMap.put(entry.first, holder);
-        // Bind this view.
-        holder.configItemKey = entry.first;
-        holder.text.setHint(entry.second);
-        if ( config != null ) {
-            String value = config.getString(entry.first);
-            if (holder.text.getEditText() != null &&
-                    holder.text.getEditText().getText().length() == 0
-                    && value != null) {
-                holder.text.getEditText().setText(value);
+        if ( getItemViewType(position) == 1 ) {
+            HeaderItem header = (HeaderItem)abstractHolder;
+            header.header.setText(configValues.get(position).second);
+        } else {
+            StringConfigItem holder = (StringConfigItem) abstractHolder;
+            Pair<String, String> entry = configValues.get(position);
+            // Bind this view.
+            holder.text.setHint(entry.second);
+            if (config != null) {
+                String value = config.getString(entry.first);
+                if (holder.text.getEditText() != null &&
+                        holder.text.getEditText().getText().length() == 0
+                        && value != null) {
+                    holder.text.getEditText().setText(value);
+                }
             }
+            holder.updatePositon(entry.first, userConfigChanges.get(entry.first));
+        }
+    }
+
+    private class HeaderItem extends RecyclerView.ViewHolder {
+        public final TextView header;
+
+        public HeaderItem(View v) {
+            super(v);
+            header = (TextView) v.findViewById(R.id.header);
+
         }
     }
 }

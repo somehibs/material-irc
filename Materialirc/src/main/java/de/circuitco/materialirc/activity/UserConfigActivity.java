@@ -35,7 +35,7 @@ public class UserConfigActivity extends UiActivity {
     private UserConfigAdapter configAdapter;
 
     private UserConfigDb database;
-
+    private List<Pair<String, String>> configValues;
 
     public static Intent get(Activity ctx, String existingConfig, boolean advancedSettings) {
         Intent intent = new Intent(ctx, UserConfigActivity.class);
@@ -62,43 +62,58 @@ public class UserConfigActivity extends UiActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getSupportActionBar().setTitle(R.string.user_config_title);
+
         database = new UserConfigDb(this);
 
         name = getIntent().getStringExtra("name");
+        advanced = getIntent().getBooleanExtra("advanced", false);
+
+        parseIntent();
+        // config is invalid or wasn't provided, create new
+        if ( configuration == null ) {
+            configuration = new UserConfig();
+        }
+
+        refreshConfigValues();
+
+        configAdapter = new UserConfigAdapter(configuration, configValues);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(configAdapter);
+    }
+
+    private void parseIntent() {
         if ( name != null ) {
             configuration = database.getConfig(name);
             if ( configuration == null ) {
+                // name is not in db, clear name from args
                 name = null;
-                configuration = new UserConfig();
             }
         } else if (getIntent().hasExtra("existing_config")) {
             // Confirm you want this config added dialog.
             Toast.makeText(this, "Not implemented", Toast.LENGTH_LONG).show();
-        } else {
-            // config name is invalid or wasn't provided
-            name = null;
-            configuration = new UserConfig();
         }
-        advanced = getIntent().getBooleanExtra("advanced", false);
+    }
 
-        List<Pair<String,String>> configValues = new ArrayList<>();
+    private void refreshConfigValues() {
+        if ( configValues == null ) {
+            configValues = new ArrayList<>();
 
-        configValues.add(new Pair<>(UserConfig.CONFIG_NAME, getString(R.string.config_name_hint)));
-        configValues.add(new Pair<>(UserConfig.USERNAME, getString(R.string.username_hint)));
-        configValues.add(new Pair<>(UserConfig.SERVER_ADDRESS, getString(R.string.server_address_hint)));
-        configValues.add(new Pair<>(UserConfig.SERVER_PORT, getString(R.string.server_port_hint)));
+            configValues.add(new Pair<>("HEADER", getString(R.string.general_title)));
+            configValues.add(new Pair<>(UserConfig.CONFIG_NAME, getString(R.string.config_name_hint)));
+            configValues.add(new Pair<>(UserConfig.USERNAME, getString(R.string.username_hint)));
+            configValues.add(new Pair<>("HEADER", getString(R.string.server_title)));
+            configValues.add(new Pair<>(UserConfig.SERVER_ADDRESS, getString(R.string.server_address_hint)));
+            configValues.add(new Pair<>(UserConfig.SERVER_PORT, getString(R.string.server_port_hint)));
 
-        if ( advanced ) {
-            configValues.add(new Pair<>(UserConfig.ALTERNATE_SERVER_ADDRESS, getString(R.string.server_address_hint)));
-            configValues.add(new Pair<>(UserConfig.ALTERNATE_SERVER_PORT, getString(R.string.server_port_hint)));
+            if (advanced) {
+                configValues.add(new Pair<>(UserConfig.ALTERNATE_SERVER_ADDRESS, getString(R.string.secondary_server_address_hint)));
+                configValues.add(new Pair<>(UserConfig.ALTERNATE_SERVER_PORT, getString(R.string.secondary_server_port_hint)));
+            }
         }
-
-        configAdapter = new UserConfigAdapter(configuration, configValues);
-
-        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(configAdapter);
     }
 
     @Override
